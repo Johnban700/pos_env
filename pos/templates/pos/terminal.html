@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mall POS - Cashier Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-950 text-white min-h-screen">
+
+<div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-4xl font-bold text-center mb-8">🛒 POS Cashiering System</h1>
+
+    <!-- Barcode / Search -->
+    <div class="mb-8">
+        <input id="barcode" type="text" placeholder="Scan barcode or search product..." 
+               class="w-full bg-gray-900 border border-gray-700 rounded-xl px-6 py-4 text-lg focus:outline-none focus:border-emerald-500">
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+        <!-- Products Grid -->
+        <div class="col-span-7">
+            <h2 class="text-2xl mb-4">Products</h2>
+            <div class="grid grid-cols-3 gap-4" id="product-grid">
+                {% for product in products %}
+                <div onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, {{ product.stock }})" 
+                     class="bg-gray-900 hover:bg-gray-800 p-4 rounded-2xl cursor-pointer transition">
+                    <p class="font-semibold">{{ product.name }}</p>
+                    <p class="text-emerald-400">NT${{ product.price }}</p>
+                    <p class="text-sm text-gray-400">Stock: {{ product.stock }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Cart -->
+        <div class="col-span-5">
+            <h2 class="text-2xl mb-4">Cart</h2>
+            <table class="w-full" id="cart-table">
+                <thead>
+                    <tr class="border-b border-gray-700">
+                        <th class="text-left py-3">Item</th>
+                        <th class="text-right py-3">Qty</th>
+                        <th class="text-right py-3">Price</th>
+                        <th class="text-right py-3">Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="cart-body" class="divide-y divide-gray-700"></tbody>
+            </table>
+
+            <div class="mt-8 bg-gray-900 rounded-3xl p-6">
+                <div class="flex justify-between text-xl">
+                    <span>Subtotal</span>
+                    <span id="subtotal">NT$0.00</span>
+                </div>
+                <div class="flex justify-between text-xl mt-3">
+                    <span>Tax (5%)</span>
+                    <span id="tax">NT$0.00</span>
+                </div>
+                <div class="flex justify-between text-3xl font-bold mt-6 border-t border-gray-700 pt-6">
+                    <span>Total</span>
+                    <span id="total" class="text-emerald-400">NT$0.00</span>
+                </div>
+
+                <div class="mt-8">
+                    <select id="payment-method" class="w-full bg-gray-800 rounded-2xl px-6 py-4 text-lg">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="mobile">Mobile Pay</option>
+                    </select>
+                </div>
+
+                <input id="tendered" type="number" step="0.01" placeholder="Tendered Amount (for Cash)" 
+                       class="mt-4 w-full bg-gray-800 rounded-2xl px-6 py-4 text-lg">
+
+                <button onclick="completeSale()" 
+                        class="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-3xl text-2xl font-bold">
+                    COMPLETE SALE
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barcode Input -->
+<input id="barcode-input" type="text" placeholder="🔍 Scan barcode or type + Enter..." 
+       class="w-full bg-gray-900 border border-gray-700 rounded-2xl px-6 py-4 text-lg focus:outline-none focus:border-emerald-500">
+
+<script>
+// Improved Barcode Handler
+document.getElementById('barcode-input').addEventListener('keypress', async function(e) {
+    if (e.key === 'Enter') {
+        const barcode = this.value.trim();
+        if (!barcode) return;
+
+        try {
+            const response = await fetch(`/pos/search-barcode/?barcode=${encodeURIComponent(barcode)}`);
+            const data = await response.json();
+
+            if (data.success && data.product) {
+                addToCart(data.product.id, data.product.name, data.product.price, data.product.stock);
+                this.value = '';   // Clear input after successful scan
+            } else {
+                alert(`❌ Product with barcode "${barcode}" not found or out of stock`);
+                this.value = '';
+            }
+        } catch (err) {
+            alert("Error connecting to server. Please try again.");
+            console.error(err);
+        }
+    }
+});
+</script>
+
+<script>
+let cart = [];
+
+function addToCart(id, name, price, stock) {
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+        if (existing.qty < stock) existing.qty++;
+    } else {
+        cart.push({id, name, price, qty: 1, stock});
+    }
+    renderCart();
+}
+
+function renderCart() {
+    const tbody = document.getElementById('cart-body');
+    tbody.innerHTML = '';
+    let subtotal = 0;
+
+    cart.forEach((item, index) => {
+        const itemSub = item.price * item.qty;
+        subtotal += itemSub;
+        tbody.innerHTML += `
+            <tr class="hover:bg-gray-800">
+                <td class="py-4">${item.name}</td>
+                <td class="py-4 text-right">
+                    <button onclick="changeQty(${index}, -1)" class="px-2 text-red-400">-</button>
+                    ${item.qty}
+                    <button onclick="changeQty(${index}, 1)" class="px-2 text-emerald-400">+</button>
+                </td>
+                <td class="py-4 text-right">NT$${item.price.toFixed(2)}</td>
+                <td class="py-4 text-right font-medium">NT$${itemSub.toFixed(2)}</td>
+                <td class="py-4 text-center">
+                    <button onclick="removeItem(${index})" class="text-red-500">×</button>
+                </td>
+            </tr>`;
+    });
+
+    const tax = subtotal * 0.05;
+    const total = subtotal + tax;
+
+    document.getElementById('subtotal').textContent = `NT$${subtotal.toFixed(2)}`;
+    document.getElementById('tax').textContent = `NT$${tax.toFixed(2)}`;
+    document.getElementById('total').textContent = `NT$${total.toFixed(2)}`;
+}
+
+function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty < 1) cart.splice(index, 1);
+    renderCart();
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+}
+
+async function completeSale() {
+    if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    const paymentMethod = document.getElementById('payment-method').value;
+    let tendered = parseFloat(document.getElementById('tendered').value) || 0;
+
+    const response = await fetch('/pos/complete-sale/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            cart: cart,
+            payment_method: paymentMethod,
+            tendered: tendered
+        })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+    alert(`✅ Sale Completed!\nTransaction: ${result.transaction_id}`);
+    window.open(result.receipt_url, '_blank');   // Opens receipt in new tab for printing
+    cart = [];
+    renderCart();
+        // Optional: reload products if needed
+        location.reload();
+    } else {
+        alert(result.error || "Failed to complete sale");
+    }
+}
+
+
+// Simple barcode support (focus on input and press Enter)
+document.getElementById('barcode').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        // In real setup, you can add AJAX search by barcode here
+        alert("Barcode scanning simulation - integrate with your scanner");
+        this.value = '';
+    }
+});
+</script>
+</body>
+</html>

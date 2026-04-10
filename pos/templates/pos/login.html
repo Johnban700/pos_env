@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Login - Cashier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center">
+    <div class="bg-gray-900 p-10 rounded-3xl w-full max-w-md">
+        <h1 class="text-4xl font-bold text-center mb-8">🛒 Mall POS</h1>
+        <h2 class="text-2xl text-center mb-6">Cashier Login</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm mb-2">Username</label>
+                    <input type="text" name="username" class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm mb-2">Password</label>
+                    <input type="password" name="password" class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500" required>
+                </div>
+
+                <button type="submit" 
+                        class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-3xl text-xl font-semibold">
+                    LOGIN TO POS
+                </button>
+            </div>
+        </form>
+
+        {% if form.errors %}
+        <p class="text-red-500 text-center mt-4">Invalid username or password</p>
+        {% endif %}
+    </div>
+</body>
+</html>
