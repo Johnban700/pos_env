@@ -1,0 +1,12 @@
+asgiref==3.11.1
+crispy-tailwind==1.0.3
+diff-match-patch==20241021
+Django==6.0.4
+django-crispy-forms==2.5
+django-import-export==4.4.0
+django-tailwind==4.4.2
+pillow==12.2.0
+pytailwindcss==0.3.0
+sqlparse==0.5.5
+tablib==3.9.0
+tzdata==2026.1
