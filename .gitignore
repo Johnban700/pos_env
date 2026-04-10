@@ -1,2 +1,34 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-*
+# Virtual Environment
+Scripts/
+Include/
+Lib/
+pyvenv.cfg
+pos_env/          # if your venv is named pos_env
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and media
+*.log
+media/
+staticfiles/
+
+# Environment variables
+.env
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
