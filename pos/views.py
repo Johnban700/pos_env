@@ -63,7 +63,7 @@ def complete_sale(request):
                     'subtotal': item_sub
                 })
 
-            tax_rate = Decimal('5.00')   # Change if needed (Taiwan VAT is usually 5%)
+            tax_rate = Decimal('0.00')   # Change if needed (Taiwan VAT is usually 5%)
             tax_amount = (subtotal * tax_rate) / 100
             total = subtotal + tax_amount
 

@@ -19,7 +19,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} (NT${self.price})"
+        return f"{self.name} (₱{self.price})"
 
     @property
     def is_low_stock(self):

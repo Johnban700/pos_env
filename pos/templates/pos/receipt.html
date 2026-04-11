@@ -19,9 +19,9 @@
 <body onload="window.print()">
 <div class="receipt">
     <div class="center">
-        <h2>MALL POS</h2>
-        <p>Gaisano Grand Mall • Cordova Cebu, Philippines</p>
-        <p>Tel: (03) 340-8562</p>
+        <h2>ValBrix Sari-Sari Store POS</h2>
+        <p>BLK10/LOT17,Evissa Subd.,Brgy. Calawisan, Lapu-Lapu City</p>
+        <p>Cell#: 09771436128</p>
         <hr>
     </div>
 
@@ -39,20 +39,20 @@
             <tr>
                 <td>{{ item.product.name }}</td>
                 <td>{{ item.quantity }}</td>
-                <td>NT${{ item.unit_price }}</td>
-                <td>NT${{ item.subtotal }}</td>
+                <td>₱{{ item.unit_price }}</td>
+                <td>₱{{ item.subtotal }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <div class="total">
-        <p>Subtotal: NT${{ sale.subtotal }}</p>
-        <p>Tax (5%): NT${{ sale.tax_amount }}</p>
-        <p class="text-xl">TOTAL: NT${{ sale.total }}</p>
+        <p>Subtotal: ₱{{ sale.subtotal }}</p>
+        <p>Tax (0%): ₱{{ sale.tax_amount }}</p>
+        <p class="text-xl">TOTAL: ₱{{ sale.total }}</p>
         {% if sale.payment_method == 'cash' %}
-        <p>Tendered: NT${{ sale.tendered }}</p>
-        <p>Change: NT${{ sale.change }}</p>
+        <p>Tendered: ₱{{ sale.tendered }}</p>
+        <p>Change: ₱{{ sale.change }}</p>
         {% endif %}
     </div>
 

@@ -9,7 +9,7 @@
 <body class="bg-gray-950 text-white min-h-screen">
 
 <div class="max-w-7xl mx-auto p-6">
-    <h1 class="text-4xl font-bold text-center mb-8">🛒 POS Cashiering System</h1>
+    <h1 class="text-4xl font-bold text-center mb-8">🛒 ValBrix Sari-Sari Store</h1>
 
     <!-- Barcode / Search -->
     <div class="mb-8">
@@ -26,7 +26,7 @@
                 <div onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, {{ product.stock }})" 
                      class="bg-gray-900 hover:bg-gray-800 p-4 rounded-2xl cursor-pointer transition">
                     <p class="font-semibold">{{ product.name }}</p>
-                    <p class="text-emerald-400">NT${{ product.price }}</p>
+                    <p class="text-emerald-400">₱{{ product.price }}</p>
                     <p class="text-sm text-gray-400">Stock: {{ product.stock }}</p>
                 </div>
                 {% endfor %}
@@ -52,15 +52,15 @@
             <div class="mt-8 bg-gray-900 rounded-3xl p-6">
                 <div class="flex justify-between text-xl">
                     <span>Subtotal</span>
-                    <span id="subtotal">NT$0.00</span>
+                    <span id="subtotal">0.00</span>
                 </div>
                 <div class="flex justify-between text-xl mt-3">
-                    <span>Tax (5%)</span>
-                    <span id="tax">NT$0.00</span>
+                    <span>Tax (0%)</span>
+                    <span id="tax">₱0.00</span>
                 </div>
                 <div class="flex justify-between text-3xl font-bold mt-6 border-t border-gray-700 pt-6">
                     <span>Total</span>
-                    <span id="total" class="text-emerald-400">NT$0.00</span>
+                    <span id="total" class="text-emerald-400">₱0.00</span>
                 </div>
 
                 <div class="mt-8">
@@ -142,20 +142,20 @@ function renderCart() {
                     ${item.qty}
                     <button onclick="changeQty(${index}, 1)" class="px-2 text-emerald-400">+</button>
                 </td>
-                <td class="py-4 text-right">NT$${item.price.toFixed(2)}</td>
-                <td class="py-4 text-right font-medium">NT$${itemSub.toFixed(2)}</td>
+                <td class="py-4 text-right">₱${item.price.toFixed(2)}</td>
+                <td class="py-4 text-right font-medium">₱${itemSub.toFixed(2)}</td>
                 <td class="py-4 text-center">
                     <button onclick="removeItem(${index})" class="text-red-500">×</button>
                 </td>
             </tr>`;
     });
 
-    const tax = subtotal * 0.05;
+    const tax = subtotal * 0.0;
     const total = subtotal + tax;
 
-    document.getElementById('subtotal').textContent = `NT$${subtotal.toFixed(2)}`;
-    document.getElementById('tax').textContent = `NT$${tax.toFixed(2)}`;
-    document.getElementById('total').textContent = `NT$${total.toFixed(2)}`;
+    document.getElementById('subtotal').textContent = `₱${subtotal.toFixed(2)}`;
+    document.getElementById('tax').textContent = `₱${tax.toFixed(2)}`;
+    document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
 }
 
 function changeQty(index, delta) {
